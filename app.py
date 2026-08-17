@@ -104,7 +104,9 @@ if 'fundamental_analyzer' not in st.session_state:
 if 'technical_analyzer' not in st.session_state:
     st.session_state.technical_analyzer = TechnicalAnalyzer()
 if 'stock_data' not in st.session_state:
-    st.session_state.stock
+    st.session_state.stock_data = {}  
+    st.session_state.fundamental_scores = {}  
+    st.session_state.technical_scores = {}  
     # app.py - 이어서 (위에서 작성한 코드 다음에 붙여넣기)
 
 # ========== 여기서부터 app.py 이어서 작성 ==========
