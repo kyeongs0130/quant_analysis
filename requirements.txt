@@ -1,0 +1,11 @@
+streamlit
+pandas
+numpy
+yfinance
+pandas-datareader
+requests
+sqlalchemy
+apscheduler
+plotly
+ta
+openpyxl
