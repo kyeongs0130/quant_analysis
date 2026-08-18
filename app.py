@@ -51,27 +51,30 @@ st.markdown(f"""
         .stSidebar {{
             background-color: #0a0a0a;
         }}
-        /* 사이드바 버튼 스타일 */
-        .sidebar-button {{
+        /* 사이드바 메뉴 스타일 - 세로 배열 */
+        .menu-button {{
             display: block;
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 20px;
             margin: 4px 0;
             background-color: transparent;
             color: #ffffff;
             border: none;
             border-radius: 8px;
             text-align: left;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            white-space: nowrap;
         }}
-        .sidebar-button:hover {{
+        .menu-button:hover {{
             background-color: #1a1a1a;
         }}
-        .sidebar-button.active {{
-            background-color: #2a2a2a;
-            border-left: 3px solid #00ff88;
+        .menu-button.active {{
+            background-color: #1a3a1a;
+            border-left: 4px solid #00ff88;
+            color: #00ff88;
         }}
         .main-header {{
             color: {UI_CONFIG['text_color']};
@@ -97,13 +100,6 @@ st.markdown(f"""
         }}
         .metric-change-negative {{
             color: {UI_CONFIG['danger_color']};
-        }}
-        .stock-card {{
-            background-color: #0d0d0d;
-            padding: 0.8rem;
-            border-radius: 8px;
-            margin: 0.3rem 0;
-            border: 1px solid #2a2a2a;
         }}
         div[data-testid="stMetricValue"] {{
             color: {UI_CONFIG['text_color']} !important;
@@ -136,41 +132,37 @@ if 'technical_scores' not in st.session_state:
 if 'page' not in st.session_state:
     st.session_state.page = "Home"
 
-# ===== 사이드바 (버튼 스타일) =====
+# ===== 사이드바 (세로 메뉴) =====
 with st.sidebar:
-    # 로고 이미지만 표시 (텍스트 제거)
+    # 로고
     st.image("https://img.icons8.com/fluency/96/000000/stocks.png", width=80)
-    
-    # 빈 공간
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # 버튼 스타일의 메뉴 (radio 대신)
-    col1, col2, col3, col4 = st.columns(4)
-    
     # Home 버튼
-    if col1.button("Home", use_container_width=True, type="primary" if st.session_state.page == "Home" else "secondary"):
+    home_active = "active" if st.session_state.page == "Home" else ""
+    if st.button("🏠 Home", key="btn_home", use_container_width=True):
         st.session_state.page = "Home"
         st.rerun()
     
     # Fundamental 버튼
-    if col2.button("Fundamental", use_container_width=True, type="primary" if st.session_state.page == "Fundamental" else "secondary"):
+    fund_active = "active" if st.session_state.page == "Fundamental" else ""
+    if st.button("📈 Fundamental", key="btn_fund", use_container_width=True):
         st.session_state.page = "Fundamental"
         st.rerun()
     
     # Technical 버튼
-    if col3.button("Technical", use_container_width=True, type="primary" if st.session_state.page == "Technical" else "secondary"):
+    tech_active = "active" if st.session_state.page == "Technical" else ""
+    if st.button("📉 Technical", key="btn_tech", use_container_width=True):
         st.session_state.page = "Technical"
         st.rerun()
     
     # Overall 버튼
-    if col4.button("Overall", use_container_width=True, type="primary" if st.session_state.page == "Overall" else "secondary"):
+    overall_active = "active" if st.session_state.page == "Overall" else ""
+    if st.button("⭐ Overall", key="btn_overall", use_container_width=True):
         st.session_state.page = "Overall"
         st.rerun()
     
-    # 구분선
     st.markdown("---")
-    
-    # 현재 페이지 표시 (선택적으로)
     st.caption(f"Current: {st.session_state.page}")
 
 # 데이터 수집 함수
@@ -266,7 +258,7 @@ elif st.session_state.page == "Fundamental":
         with st.spinner('Running fundamental analysis...'):
             st.success("Analysis complete!")
     
-    st.subheader("Top 30 Rankings")
+    st.subheader("Top 30 Rankings (Sorted by Score)")
     
     sample_data = []
     for code, info in list(stock_prices.items())[:30]:
@@ -283,6 +275,10 @@ elif st.session_state.page == "Fundamental":
         })
     
     df = pd.DataFrame(sample_data)
+    # Score 내림차순 정렬
+    df = df.sort_values('Score', ascending=False).reset_index(drop=True)
+    df['Rank'] = df.index + 1
+    
     styled_df = df.style.map(highlight_score, subset=['Score'])
     st.dataframe(styled_df, use_container_width=True, height=600)
     
@@ -314,7 +310,7 @@ elif st.session_state.page == "Technical":
         with st.spinner('Running technical analysis...'):
             st.success("Analysis complete!")
     
-    st.subheader("Top 30 Rankings")
+    st.subheader("Top 30 Rankings (Sorted by Score)")
     
     sample_data = []
     for code, info in list(stock_prices.items())[:30]:
@@ -331,6 +327,10 @@ elif st.session_state.page == "Technical":
         })
     
     df = pd.DataFrame(sample_data)
+    # Score 내림차순 정렬
+    df = df.sort_values('Score', ascending=False).reset_index(drop=True)
+    df['Rank'] = df.index + 1
+    
     styled_df = df.style.map(highlight_score, subset=['Score'])
     st.dataframe(styled_df, use_container_width=True, height=600)
     
@@ -406,7 +406,7 @@ else:
         with st.spinner('Running combined analysis...'):
             st.success("Analysis complete!")
     
-    st.subheader("Top 30 Overall Rankings")
+    st.subheader("Top 30 Overall Rankings (Sorted by Score)")
     
     sample_data = []
     for code, info in list(stock_prices.items())[:30]:
@@ -428,6 +428,7 @@ else:
         })
     
     df = pd.DataFrame(sample_data)
+    # Overall 내림차순 정렬
     df = df.sort_values('Overall', ascending=False).reset_index(drop=True)
     df['Rank'] = df.index + 1
     
