@@ -139,25 +139,21 @@ with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Home 버튼
-    home_active = "active" if st.session_state.page == "Home" else ""
     if st.button("🏠 Home", key="btn_home", use_container_width=True):
         st.session_state.page = "Home"
         st.rerun()
     
     # Fundamental 버튼
-    fund_active = "active" if st.session_state.page == "Fundamental" else ""
     if st.button("📈 Fundamental", key="btn_fund", use_container_width=True):
         st.session_state.page = "Fundamental"
         st.rerun()
     
     # Technical 버튼
-    tech_active = "active" if st.session_state.page == "Technical" else ""
     if st.button("📉 Technical", key="btn_tech", use_container_width=True):
         st.session_state.page = "Technical"
         st.rerun()
     
     # Overall 버튼
-    overall_active = "active" if st.session_state.page == "Overall" else ""
     if st.button("⭐ Overall", key="btn_overall", use_container_width=True):
         st.session_state.page = "Overall"
         st.rerun()
@@ -280,7 +276,7 @@ elif st.session_state.page == "Fundamental":
     df['Rank'] = df.index + 1
     
     styled_df = df.style.map(highlight_score, subset=['Score'])
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    st.dataframe(styled_df, use_container_width=True, height=600, hide_index=True)  # ← 인덱스 숨김
     
     st.markdown("---")
     st.subheader("Detail Analysis")
@@ -332,7 +328,7 @@ elif st.session_state.page == "Technical":
     df['Rank'] = df.index + 1
     
     styled_df = df.style.map(highlight_score, subset=['Score'])
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    st.dataframe(styled_df, use_container_width=True, height=600, hide_index=True)  # ← 인덱스 숨김
     
     st.markdown("---")
     st.subheader("Chart")
@@ -433,7 +429,7 @@ else:
     df['Rank'] = df.index + 1
     
     styled_df = df.style.map(highlight_overall, subset=['Overall'])
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    st.dataframe(styled_df, use_container_width=True, height=600, hide_index=True)  # ← 인덱스 숨김
     
     st.markdown("---")
     st.subheader("Top 3 Picks")
